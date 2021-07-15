@@ -119,27 +119,49 @@ def hirose_dispersion_solution(
     D = ((k * c) / omega_pi ) ** 2
     
     #Polynomial coefficients where x in 'cx' represents the order of the term
-    c3 = 1
-    c2 = A * (1 + D) + B  + C
+    c3 = 1 
+    c2 = -A * (1 + D) + B  + C
     c1 = A * (2 * B + C + B * D)
     c0 = -B * A ** 2
     
-    [L1, L2, L3] = np.roots([c3, c2.value, c1.value, c0.value])
-    [omega1, omega2, omega3] = [np.emath.sqrt(L1), np.emath.sqrt(L2), np.emath.sqrt(L3)]
+    omega = {}
+    fast_mode = []
+    alfven_mode = []
+    acoustic_mode = []
     
-    return omega1, omega2, omega3
+    # If a single k value is given
+    if np.isscalar(k.value) == True:
+        
+        w = np.emath.sqrt(np.roots([c3, c2.value, c1.value, c0.value]))
+        mode1 = np.max(w)
+        mode2 = np.median(w)
+        mode3 = np.min(w)
+        
+    # If mutliple k values are given
+    else:
+        # a0*x^3 + a1*x^2 + a2*x^3 + a3 = 0
+        for (a0,a1,a2,a3) in zip(c3, c2, c1, c0):
+    
+            w = np.emath.sqrt(np.roots([a0.value, a1.value, a2.value, a3.value]))
+            mode1.append(np.max(w))
+            mode2.append(np.median(w))
+            mode3.append(np.min(w)) 
+
+    omega['mode1'] = mode1 * u.rad / u.s
+    omega['mode2'] = mode2 * u.rad / u.s
+    omega['mode3'] = mode3 * u.rad / u.s
+    
+    return omega
 
 inputs = {
-"k": .01 * u.rad / u.m,
+"k": np.logspace(-7,-2,3) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
-"n_i": 5e6 * u.m ** -3,
+"n_i": 5 * u.m ** -3,
 "T_e": 1.6e6 * u.K,
-"T_i": 4.0e5 * u.K,
-"ion": "p+",
+"T_i": 1e-4 * u.K,
+"ion": Particle("p+"),
 }
 
 print(hirose_dispersion_solution(**inputs))
 
-    # Change test 3
-# Hi

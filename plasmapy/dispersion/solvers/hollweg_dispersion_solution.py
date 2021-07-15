@@ -155,6 +155,7 @@ def hollweg_dispersion_solution(
     omega['alfven_mode'] = alfven_mode * u.rad / u.s
     omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
+    
     return omega 
 
 
