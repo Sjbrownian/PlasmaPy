@@ -119,20 +119,25 @@ def hirose_dispersion_solution(
     D = ((k * c) / omega_pi ) ** 2
     
     #Polynomial coefficients where x in 'cx' represents the order of the term
-    c3 = 1 
+    
+    #c3 must be an astropy.units.quantiy.Quantity type.
+    #Typing "1" doesn't work since it's an int, "A ** 0" gives astropy units.
+    #May be simpler way to change to proper type.
+    
+    c3 = A ** 0
     c2 = -A * (1 + D) + B  + C
     c1 = A * (2 * B + C + B * D)
     c0 = -B * A ** 2
     
     omega = {}
-    fast_mode = []
-    alfven_mode = []
-    acoustic_mode = []
+    mode1 = []
+    mode2 = []
+    mode3 = []
     
     # If a single k value is given
     if np.isscalar(k.value) == True:
         
-        w = np.emath.sqrt(np.roots([c3, c2.value, c1.value, c0.value]))
+        w = np.emath.sqrt(np.roots([c3.value, c2.value, c1.value, c0.value]))
         mode1 = np.max(w)
         mode2 = np.median(w)
         mode3 = np.min(w)
@@ -154,7 +159,7 @@ def hirose_dispersion_solution(
     return omega
 
 inputs = {
-"k": np.logspace(-7,-2,3) * u.rad / u.m,
+"k": np.logspace(-7,-2,2) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,
@@ -162,6 +167,8 @@ inputs = {
 "T_i": 1e-4 * u.K,
 "ion": Particle("p+"),
 }
+
+
 
 print(hirose_dispersion_solution(**inputs))
 

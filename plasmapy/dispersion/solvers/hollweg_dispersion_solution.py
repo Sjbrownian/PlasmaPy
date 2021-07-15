@@ -155,12 +155,11 @@ def hollweg_dispersion_solution(
     omega['alfven_mode'] = alfven_mode * u.rad / u.s
     omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
-    
     return omega 
 
 
 inputs = {
-    "k": np.logspace(-7,-2,2) * u.rad / u.m,
+    "k": .01 * u.rad / u.m,
     "theta": 88 * u.deg,
     "n_i": 5 * u.cm ** -3,
     "B": 2.2e-8 * u.T,
