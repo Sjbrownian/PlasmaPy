@@ -25,7 +25,7 @@ def hirose_dispersion_solution(
     z_mean: Union[float, int] = None,
  ):
     r'''
-    Notess
+    Notes
     -----
     
     Solves equation 7 in Bellan2012JGR (originally from Hirose2004)
