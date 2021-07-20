@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 31 18:35:46 2021
-
-@author: sshan
-"""
 import numpy as np
 import astropy.units as u
 
@@ -30,6 +24,18 @@ def alfven_dispersion_solution(
     gamma_i: Union[float, int] = 3,
     z_mean: Union[float, int] = None,
  ):
+    r'''
+    Notes
+    -----
+    
+    Solves equation 5 in Bellan2012JGR (argued in Hasegawa and Uberoi 1982,
+    Morales and Maggs 1997, and Lysak and Lotko 1996)
+    
+    ..math::
+        \omega^2 = k_{\rm z}^2 v_{\rm A}^2 \left(1 + \frac{k_{\rm x}^2 &
+        c_{\rm s}^2}{\omega_{\rm ci}^2} \right)
+        
+    '''
     
     # validate argument ion
     if not isinstance(ion, Particle):
@@ -106,8 +112,6 @@ def alfven_dispersion_solution(
     omega_ci = pfp.gyrofrequency(B=B, particle=ion, signed=False, Z=z_mean)
     
     
-    #Grid/vector creation for k?
-    
     #Parameters kz
     
     kz = np.cos(theta.value) * k
@@ -119,11 +123,12 @@ def alfven_dispersion_solution(
     F = ((kx * c_s) / omega_ci ) ** 2
     
     omega = np.sqrt(A * (1 + F))
-    print(omega_ci)
+#    print(omega_ci)
+
     return omega
 
 inputs = {
-"k": 0.01 * u.rad / u.m,
+"k": np.logspace(-7,-2,2) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5e6 * u.m ** -3,
@@ -131,5 +136,7 @@ inputs = {
 "T_i": 4.0e5 * u.K,
 "ion": "p+",
 }
+
+
 
 print(alfven_dispersion_solution(**inputs))

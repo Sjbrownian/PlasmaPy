@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 31 18:35:46 2021
-
-@author: sshan
-"""
 import numpy as np
 import astropy.units as u
 
@@ -30,6 +24,25 @@ def hirose_dispersion_solution(
     gamma_i: Union[float, int] = 3,
     z_mean: Union[float, int] = None,
  ):
+    r'''
+    Notes
+    -----
+    
+    Solves equation 7 in Bellan2012JGR (originally from Hirose2004)
+    
+    ..math::
+        \left(\omega^2 - k_{\rm z}^2 v_{\rm A}^2 \right) &
+        \left(\omega^4 - \omega^2 k^2 \left(c_{\rm s}^2 + v_{\rm A}^2 \right) &
+        + k^2 v_{\rm A}^2 k_{\rm z}^2 c_{\rm s}^2 \right) & 
+        \frac{k^2 c^2}{\omega_{\rm pi}^2} \omega^2 v_{\rm A}^2 k_{\rm z}^2 &
+        \left(\omega^2 - k^2 c_{\rm s}^2 \right)
+    
+    Examples
+    --------
+    
+    
+        
+    '''
     
     # validate argument ion
     if not isinstance(ion, Particle):
@@ -130,17 +143,17 @@ def hirose_dispersion_solution(
     c0 = -B * A ** 2
     
     omega = {}
-    mode1 = []
-    mode2 = []
-    mode3 = []
+    fast_mode = []
+    alfven_mode = []
+    acoustic_mode = []
     
     # If a single k value is given
     if np.isscalar(k.value) == True:
         
         w = np.emath.sqrt(np.roots([c3.value, c2.value, c1.value, c0.value]))
-        mode1 = np.max(w)
-        mode2 = np.median(w)
-        mode3 = np.min(w)
+        fast_mode = np.max(w)
+        alfven_mode = np.median(w)
+        acoustic_mode = np.min(w)
         
     # If mutliple k values are given
     else:
@@ -148,13 +161,13 @@ def hirose_dispersion_solution(
         for (a0,a1,a2,a3) in zip(c3, c2, c1, c0):
     
             w = np.emath.sqrt(np.roots([a0.value, a1.value, a2.value, a3.value]))
-            mode1.append(np.max(w))
-            mode2.append(np.median(w))
-            mode3.append(np.min(w)) 
+            fast_mode.append(np.max(w))
+            alfven_mode.append(np.median(w))
+            acoustic_mode.append(np.min(w)) 
 
-    omega['mode1'] = mode1 * u.rad / u.s
-    omega['mode2'] = mode2 * u.rad / u.s
-    omega['mode3'] = mode3 * u.rad / u.s
+    omega['fast_mode'] = fast_mode * u.rad / u.s
+    omega['alfven_mode'] = alfven_mode * u.rad / u.s
+    omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
     return omega
 
