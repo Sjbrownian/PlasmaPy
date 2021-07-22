@@ -11,6 +11,7 @@ from plasmapy.utils.exceptions import PhysicsWarning
 from typing import Union
 
 
+
 def hirose_dispersion_solution(
     *,
     B: u.T,
@@ -39,9 +40,22 @@ def hirose_dispersion_solution(
     
     Examples
     --------
-    
-    
-        
+    >>> from astropy import units as u
+    >>> from plasmapy.dispersion import two_fluid_dispersion
+    >>> inputs = {
+    ...    "k": np.logspace(-7,-2,2) * u.rad / u.m,
+    ...    "theta": 30 * u.deg,
+    ...    "B": 8.3e-9 * u.T,
+    ...    "n_i": 5 * u.m ** -3,
+    ...    "T_e": 1.6e6 * u.K,
+    ...    "T_i": 1e-4 * u.K,
+    ...    "ion": Particle("p+"),
+    ...}
+    >>> omegas = hirose_dispersion_solution(**inputs)
+    >>> omegas
+    {'fast_mode': <Quantity [7.12646288e+01, 7.13838935e+11] rad / s>,
+     'alfven_mode': <Quantity [7.96179537e-01, 1.14921892e+03] rad / s>,
+     'acoustic_mode': <Quantity [0.00995224, 0.68834011] rad / s>}
     '''
     
     # validate argument ion
@@ -118,7 +132,6 @@ def hirose_dispersion_solution(
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_pi = pfp.plasma_frequency(n=n_i, particle=ion)
     
-    #Grid/vector creation for k?
     
     #Parameters kz
     
@@ -183,5 +196,7 @@ inputs = {
 
 
 
-print(hirose_dispersion_solution(**inputs))
+omegas = hirose_dispersion_solution(**inputs)
+print(type(omegas['fast_mode']))
+print(omegas)
 
