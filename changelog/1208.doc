@@ -1,0 +1,2 @@
+Refactored plasmapy.dispersion and added the analytical sub-package.
+There were also changes made to PlasmaPy/docs/api_static and PlasmaPy/docs/notebooks/dispersion for the two fluid dispersion solution.
