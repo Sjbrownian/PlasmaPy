@@ -1,5 +1,6 @@
 import numpy as np
 import astropy.units as u
+import warnings
 
 from astropy.constants.si import c
 from plasmapy.formulary import parameters as pfp
@@ -144,10 +145,23 @@ def alfven_dispersion_solution(
     omega = np.sqrt(A * (1 + F))
 #    print(omega_ci)
 
+    v_Te = pfp.thermal_speed(T=T_e, particle='e-')
+    v_Ti = pfp.thermal_speed(T=T_i, particle=ion)
+    
+    w_max = np.max(omega)
+    
+    if w_max / omega_ci > .01:
+        warnings.warn(
+            f"The calculation produced a high-frequency wave, "
+            f"which violates the low frequency assumption w << w_ci",
+            PhysicsWarning,
+            )
+    
+    
     return omega
 
 inputs = {
-"k": np.logspace(-7,-2,2) * u.rad / u.m,
+"k": np.logspace(-2, -7, 2) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,
