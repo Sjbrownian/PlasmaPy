@@ -163,11 +163,11 @@ def alfven_dispersion_solution(
     
     # the dispersion relation is valid in v_Te >> w/kz >> v_Ti
     
-    # maximum possible value for w/kz test
     x = w_max / kz_min
-    
     y = w_min / kz_max
-    if x / v_Te < 0.1 or v_Ti / x < 0.1:
+    
+    # maximum possible value for w/kz test
+    if x / v_Te > 0.1 or v_Ti / x > 0.1:
         warnings.warn(
             f"This calculation produced an invalid w/kz value "
             f"which violates the regime in which the dispersion relation "
@@ -176,9 +176,7 @@ def alfven_dispersion_solution(
             )
     
     # minimum possible value for w/kz test    
-   
-    
-    elif y / v_Te < 0.1 or v_Ti / y < 0.1:
+    elif y / v_Te > 0.1 or v_Ti / y > 0.1:
         warnings.warn(
             f"This calculation produced an invalid w/kz value "
             f"which violates the regime in which the dispersion relation "
@@ -190,7 +188,7 @@ def alfven_dispersion_solution(
     if w_max / omega_ci > 0.1:
         warnings.warn(
             f"The calculation produced a high-frequency wave, "
-            f"which violates the low frequency assumption w << w_ci",
+            f"which violates the low frequency assumption (w << w_ci)",
             PhysicsWarning,
             )
     
