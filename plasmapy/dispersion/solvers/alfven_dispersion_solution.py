@@ -132,25 +132,62 @@ def alfven_dispersion_solution(
     omega_ci = pfp.gyrofrequency(B=B, particle=ion, signed=False, Z=z_mean)
     
     
-    #Parameters kz
+    # parameters kz
     
     kz = np.cos(theta.value) * k
     kx = np.sqrt(k ** 2 - kz ** 2)
     
     
-    #Parameters sigma, D, and F to simplify equation 3
+    # parameters sigma, D, and F to simplify equation 3
     A = (kz * v_A) ** 2
     F = ((kx * c_s) / omega_ci ) ** 2
     
     omega = np.sqrt(A * (1 + F))
-#    print(omega_ci)
+    #print(omega_ci)
 
+
+    # check for dispersion relation assumptions and valid regimes
+    
+    # some useful paramters
+    
     v_Te = pfp.thermal_speed(T=T_e, particle='e-')
     v_Ti = pfp.thermal_speed(T=T_i, particle=ion)
     
+    # max and min values for omega
     w_max = np.max(omega)
+    w_min = np.min(omega)
     
-    if w_max / omega_ci > .01:
+    # Max and min values for kz
+    kz_max = np.max(kz)
+    kz_min = np.min(kz)
+    
+    # the dispersion relation is valid in v_Te >> w/kz >> v_Ti
+    
+    # maximum possible value for w/kz test
+    x = w_max / kz_min
+    
+    y = w_min / kz_max
+    if x / v_Te < 0.1 or v_Ti / x < 0.1:
+        warnings.warn(
+            f"This calculation produced an invalid w/kz value "
+            f"which violates the regime in which the dispersion relation "
+            f"is valid (v_Te >> w/kz >> v_Ti)",
+            PhysicsWarning,
+            )
+    
+    # minimum possible value for w/kz test    
+   
+    
+    elif y / v_Te < 0.1 or v_Ti / y < 0.1:
+        warnings.warn(
+            f"This calculation produced an invalid w/kz value "
+            f"which violates the regime in which the dispersion relation "
+            f"is valid (v_Te >> w/kz >> v_Ti)",
+            PhysicsWarning,
+            )
+        
+    # dispersion relation is only valid in the regime w << w_ci
+    if w_max / omega_ci > 0.1:
         warnings.warn(
             f"The calculation produced a high-frequency wave, "
             f"which violates the low frequency assumption w << w_ci",
@@ -161,7 +198,7 @@ def alfven_dispersion_solution(
     return omega
 
 inputs = {
-"k": np.logspace(-2, -7, 2) * u.rad / u.m,
+"k": np.logspace(-2, -7, 5) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,

@@ -1,5 +1,6 @@
 import numpy as np
 import astropy.units as u
+import warnings
 
 from astropy.constants.si import c
 from plasmapy.formulary import parameters as pfp
@@ -182,6 +183,12 @@ def hirose_dispersion_solution(
     omega['alfven_mode'] = alfven_mode * u.rad / u.s
     omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
+    # check cold ion assumption (Ti << Te)
+    if T_i / T_e > 0.1:
+        warnings.warn(
+            f"The cold ion assumption was violated (Ti << Te)",
+            PhysicsWarning,
+            )
     return omega
 
 inputs = {
