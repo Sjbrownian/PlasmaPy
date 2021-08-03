@@ -183,10 +183,12 @@ def hirose_dispersion_solution(
     omega['alfven_mode'] = alfven_mode * u.rad / u.s
     omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
-    # check cold ion assumption (Ti << Te)
-    if T_i / T_e > 0.1:
+    # Ti is assumed to be approimately 0 for this eqn
+    
+    # check cold ion assumption (Ti < 0.01)
+    if T_i.value > 0.01:
         warnings.warn(
-            f"The cold ion assumption was violated (Ti << Te)",
+            f"The cold ion assumption (Ti < 0.01) was violated",
             PhysicsWarning,
             )
     return omega

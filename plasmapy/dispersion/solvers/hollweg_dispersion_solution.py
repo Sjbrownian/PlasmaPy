@@ -160,7 +160,6 @@ def hollweg_dispersion_solution(
     m1 = np.max(omega['fast_mode'])
     m2 = np.max(omega['alfven_mode'])
     m3 = np.max(omega['acoustic_mode'])
-    print(m1,m2,m3)
     
     w_max = max(m1,m2,m3)
     
