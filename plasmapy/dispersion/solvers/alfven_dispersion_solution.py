@@ -154,12 +154,14 @@ def alfven_dispersion_solution(
     
     # maximum value of omega
     w_max = np.max(omega)
+    
     # maximum and minimum values for w/kz
     omega_kz = omega / kz
     
     omega_kz_max = np.max(omega_kz)
     omega_kz_min = np.min(omega_kz)
     
+    # dispersion relation is only valid in v_Te >> w/kz >> v_Ti
     
     # maximum value for w/kz test
     if omega_kz_max / v_Te > 0.01 or v_Ti / omega_kz_max > 0.01:
@@ -171,7 +173,7 @@ def alfven_dispersion_solution(
             )
     
     # minimum value for w/kz test    
-    elif omega_kz_min / v_Te > 0.01 or v_Ti / omega_kz_max > 0.01:
+    elif omega_kz_min / v_Te > 0.01 or v_Ti / omega_kz_min > 0.01:
         warnings.warn(
             f"This calculation produced one or more invalid w/kz value(s) "
             f"which violates the regime in which the dispersion relation "
