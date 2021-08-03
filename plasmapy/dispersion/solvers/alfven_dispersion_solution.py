@@ -148,44 +148,39 @@ def alfven_dispersion_solution(
 
     # check for dispersion relation assumptions and valid regimes
     
-    # some useful paramters
-    
+    # thermal speeds for electrons and ions in plasma
     v_Te = pfp.thermal_speed(T=T_e, particle='e-')
     v_Ti = pfp.thermal_speed(T=T_i, particle=ion)
     
-    # max and min values for omega
+    # maximum value of omega
     w_max = np.max(omega)
-    w_min = np.min(omega)
+    # maximum and minimum values for w/kz
+    omega_kz = omega / kz
     
-    # Max and min values for kz
-    kz_max = np.max(kz)
-    kz_min = np.min(kz)
+    omega_kz_max = np.max(omega_kz)
+    omega_kz_min = np.min(omega_kz)
     
-    # the dispersion relation is valid in v_Te >> w/kz >> v_Ti
     
-    x = w_max / kz_min
-    y = w_min / kz_max
-    
-    # maximum possible value for w/kz test
-    if x / v_Te > 0.1 or v_Ti / x > 0.1:
+    # maximum value for w/kz test
+    if omega_kz_max / v_Te > 0.01 or v_Ti / omega_kz_max > 0.01:
         warnings.warn(
-            f"This calculation produced an invalid w/kz value "
+            f"This calculation produced one or more invalid w/kz value(s), "
             f"which violates the regime in which the dispersion relation "
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
             )
     
-    # minimum possible value for w/kz test    
-    elif y / v_Te > 0.1 or v_Ti / y > 0.1:
+    # minimum value for w/kz test    
+    elif omega_kz_min / v_Te > 0.01 or v_Ti / omega_kz_max > 0.01:
         warnings.warn(
-            f"This calculation produced an invalid w/kz value "
+            f"This calculation produced one or more invalid w/kz value(s) "
             f"which violates the regime in which the dispersion relation "
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
             )
         
     # dispersion relation is only valid in the regime w << w_ci
-    if w_max / omega_ci > 0.1:
+    if w_max / omega_ci > 0.01:
         warnings.warn(
             f"The calculation produced a high-frequency wave, "
             f"which violates the low frequency assumption (w << w_ci)",
@@ -196,7 +191,7 @@ def alfven_dispersion_solution(
     return omega
 
 inputs = {
-"k": np.logspace(-2, -7, 5) * u.rad / u.m,
+"k": np.logspace(-2, -7, 3) * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,

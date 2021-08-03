@@ -160,11 +160,12 @@ def hollweg_dispersion_solution(
     m1 = np.max(omega['fast_mode'])
     m2 = np.max(omega['alfven_mode'])
     m3 = np.max(omega['acoustic_mode'])
+    print(m1,m2,m3)
     
     w_max = max(m1,m2,m3)
     
     # dispersion relation is only valid in the regime w << w_ci
-    if w_max / omega_ci > 0.1:
+    if w_max / omega_ci > 0.01:
         warnings.warn(
             f"The calculation produced a high-frequency wave, "
             f"which violates the low frequency assumption (w << w_ci)",
