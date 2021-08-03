@@ -206,6 +206,5 @@ inputs = {
 
 
 omegas = hirose_dispersion_solution(**inputs)
-print(type(omegas['fast_mode']))
 print(omegas)
 
