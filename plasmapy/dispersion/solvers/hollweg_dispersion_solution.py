@@ -170,7 +170,6 @@ def hollweg_dispersion_solution(
             f"which violates the low frequency assumption (w << w_ci)",
             PhysicsWarning,
             )
-    
     return omega 
 
 
