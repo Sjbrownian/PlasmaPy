@@ -1,7 +1,3 @@
-"""
-Module containing functionality focused on the plasma dispersion function
-:math:`Z(ζ)`.
-"""
 __all__ = ["plasma_dispersion_func", "plasma_dispersion_func_deriv"]
 
 import astropy.units as u
