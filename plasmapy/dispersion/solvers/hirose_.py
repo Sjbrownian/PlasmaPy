@@ -13,7 +13,7 @@ from typing import Union
 
 
 
-def hirose_dispersion_solution(
+def hirose(
     *,
     B: u.T,
     ion: Union[str, Particle],
@@ -205,6 +205,6 @@ inputs = {
 
 
 
-omegas = hirose_dispersion_solution(**inputs)
+omegas = hirose(**inputs)
 print(omegas)
 
