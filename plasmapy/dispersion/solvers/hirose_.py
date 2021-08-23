@@ -185,26 +185,41 @@ def hirose(
     
     # Ti is assumed to be approimately 0 for this eqn
     
-    # check cold ion assumption (Ti < 0.01)
-    if T_i.value > 0.01:
-        warnings.warn(
-            f"The cold ion assumption (Ti < 0.01) was violated",
-            PhysicsWarning,
-            )
     return omega
 
-inputs = {
-"k": np.logspace(-7,-2,2) * u.rad / u.m,
+inputs1 = {
+"k": 0.01 * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,
 "T_e": 1.6e6 * u.K,
-"T_i": 1e-4 * u.K,
+"T_i": 10000 * u.K,
 "ion": Particle("p+"),
 }
 
+omegas1 = hirose(**inputs1)
+a1 = omegas1['fast_mode']
+b1 = omegas1['alfven_mode']
+c1 = omegas1['acoustic_mode']
 
+inputs2 = {
+"k": 0.01 * u.rad / u.m,
+"theta": 30 * u.deg,
+"B": 8.3e-9 * u.T,
+"n_i": 5 * u.m ** -3,
+"T_e": 1.6e6 * u.K,
+"T_i": 0 * u.K,
+"ion": Particle("p+"),
+}
 
-omegas = hirose(**inputs)
-print(omegas)
+omegas2 = hirose(**inputs2)
+a2 = omegas2['fast_mode']
+b2 = omegas2['alfven_mode']
+c2 = omegas2['acoustic_mode']
 
+pdiff_a = abs(a2 - a1) / ((a1 + a2) / 2) * 100
+pdiff_b = abs(b2 - b1) / ((b1 + b2) / 2) * 100
+pdiff_c = abs(c2 - c1) / ((c1 + c2) / 2) * 100
+print("fast mode % diff: ", pdiff_a)
+print("alfven mode % diff: ", pdiff_b)
+print("acoustic mode % diff: ", pdiff_c)
