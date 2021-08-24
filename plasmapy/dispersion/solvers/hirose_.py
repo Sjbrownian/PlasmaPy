@@ -20,11 +20,11 @@ def hirose(
     k: u.rad / u.m,
     n_i: u.m ** -3,
     T_e: u.K,
-    T_i: u.K,
     theta: u.deg,
     gamma_e: Union[float, int] = 1,
     gamma_i: Union[float, int] = 3,
     z_mean: Union[float, int] = None,
+    **kwargs,
  ):
     r'''
     Notes
@@ -83,8 +83,14 @@ def hirose(
             )
         z_mean = abs(z_mean)
 
+    # invalidate T_i argument
+    if "T_i" in kwargs.keys():
+        raise TypeError(
+            "Got unexpected keyword 'T_i', dispersion relation assumes T_i = 0."
+        )
+
     # validate arguments
-    for arg_name in ("B", "n_i", "T_e", "T_i"):
+    for arg_name in ("B", "n_i", "T_e"):
         val = locals()[arg_name].squeeze()
         if val.shape != ():
             raise ValueError(
@@ -123,7 +129,7 @@ def hirose(
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,
-        T_i=T_i,
+        T_i = 0 * u.K,
         ion=ion,
         n_e=n_e,
         gamma_e=gamma_e,
@@ -183,43 +189,18 @@ def hirose(
     omega['alfven_mode'] = alfven_mode * u.rad / u.s
     omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
     
-    # Ti is assumed to be approimately 0 for this eqn
+    # Ti is assumed to be 0 for this eqn
     
     return omega
 
-inputs1 = {
+inputs = {
 "k": 0.01 * u.rad / u.m,
 "theta": 30 * u.deg,
 "B": 8.3e-9 * u.T,
 "n_i": 5 * u.m ** -3,
 "T_e": 1.6e6 * u.K,
-"T_i": 10000 * u.K,
 "ion": Particle("p+"),
 }
 
-omegas1 = hirose(**inputs1)
-a1 = omegas1['fast_mode']
-b1 = omegas1['alfven_mode']
-c1 = omegas1['acoustic_mode']
-
-inputs2 = {
-"k": 0.01 * u.rad / u.m,
-"theta": 30 * u.deg,
-"B": 8.3e-9 * u.T,
-"n_i": 5 * u.m ** -3,
-"T_e": 1.6e6 * u.K,
-"T_i": 0 * u.K,
-"ion": Particle("p+"),
-}
-
-omegas2 = hirose(**inputs2)
-a2 = omegas2['fast_mode']
-b2 = omegas2['alfven_mode']
-c2 = omegas2['acoustic_mode']
-
-pdiff_a = abs(a2 - a1) / ((a1 + a2) / 2) * 100
-pdiff_b = abs(b2 - b1) / ((b1 + b2) / 2) * 100
-pdiff_c = abs(c2 - c1) / ((c1 + c2) / 2) * 100
-print("fast mode % diff: ", pdiff_a)
-print("alfven mode % diff: ", pdiff_b)
-print("acoustic mode % diff: ", pdiff_c)
+omegas = hirose(**inputs)
+print(omegas)
