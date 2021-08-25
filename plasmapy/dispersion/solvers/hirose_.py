@@ -1,15 +1,27 @@
-import numpy as np
+"""
+This module contains functionality for calculating various numerical
+solutions to Hirose's two fluid dispersion relation
+"""
+
 import astropy.units as u
+import numpy as np
 import warnings
 
 from astropy.constants.si import c
+from typing import Union
+
 from plasmapy.formulary import parameters as pfp
 from plasmapy.particles import Particle
 from plasmapy.particles.exceptions import ChargeError
 from plasmapy.utils.decorators import validate_quantities
 from plasmapy.utils.exceptions import PhysicsWarning
 
-from typing import Union
+
+@validate_quantities(
+    B={"can_be_negative": False},
+    n_i={"can_be_negative": False},
+    T_e={"can_be_negative": False, "equivalencies": u.temperature_energy()},
+)
 
 
 
@@ -26,7 +38,7 @@ def hirose(
     z_mean: Union[float, int] = None,
     **kwargs,
  ):
-    r'''
+    r"""
     Notes
     -----
     
@@ -49,7 +61,6 @@ def hirose(
     ...    "B": 8.3e-9 * u.T,
     ...    "n_i": 5 * u.m ** -3,
     ...    "T_e": 1.6e6 * u.K,
-    ...    "T_i": 1e-4 * u.K,
     ...    "ion": Particle("p+"),
     ...}
     >>> omegas = hirose_dispersion_solution(**inputs)
@@ -125,7 +136,7 @@ def hirose(
             f"Argument 'theta' needs to be a single valued or 1D array astropy "
             f"Quantity, got array of shape {k.shape}."
         ) 
-        
+"""    
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,

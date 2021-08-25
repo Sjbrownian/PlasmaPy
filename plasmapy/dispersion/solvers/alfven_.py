@@ -1,15 +1,28 @@
-import numpy as np
+"""
+This module contains functionality for calculating various numerical
+solutions to the kinetic alfven dispersion relation
+"""
+
 import astropy.units as u
+import numpy as np
 import warnings
 
 from astropy.constants.si import c
+from typing import Union
+
 from plasmapy.formulary import parameters as pfp
 from plasmapy.particles import Particle
 from plasmapy.particles.exceptions import ChargeError
 from plasmapy.utils.decorators import validate_quantities
 from plasmapy.utils.exceptions import PhysicsWarning
 
-from typing import Union
+
+@validate_quantities(
+    B={"can_be_negative": False},
+    n_i={"can_be_negative": False},
+    T_e={"can_be_negative": False, "equivalencies": u.temperature_energy()},
+    T_i={"can_be_negative": False, "equivalencies": u.temperature_energy()},
+)
 
 
 def alfven(
@@ -41,7 +54,7 @@ def alfven(
     --------
     
     >>> from astropy import units as u
-    >>> from plasmapy.dispersion import two_fluid_dispersion
+    >>> from plasmapy.dispersion.numerical import alfven_
     >>> inputs = {
     ...    "k": np.logspace(-7,-2,2) * u.rad / u.m,
     ...    "theta": 30 * u.deg,
@@ -51,7 +64,7 @@ def alfven(
     ...    "T_i": 4.0e5 * u.K,
     ...    "ion": Particle("p+"),
     ...}
-    >>> omegas = alfven_dispersion_solution(**inputs)
+    >>> omegas = alfven(**inputs)
     >>> omegas
     [7.01005647e+00 6.70197761e+08] rad / s
     
@@ -164,7 +177,7 @@ def alfven(
     # dispersion relation is only valid in v_Te >> w/kz >> v_Ti
     
     # maximum value for w/kz test
-    if omega_kz_max / v_Te > 0.01 or v_Ti / omega_kz_max > 0.01:
+    if omega_kz_max / v_Te > 0.1 or v_Ti / omega_kz_max > 0.1:
         warnings.warn(
             f"This calculation produced one or more invalid w/kz value(s), "
             f"which violates the regime in which the dispersion relation "
@@ -173,7 +186,7 @@ def alfven(
             )
     
     # minimum value for w/kz test    
-    elif omega_kz_min / v_Te > 0.01 or v_Ti / omega_kz_min > 0.01:
+    elif omega_kz_min / v_Te > 0.1 or v_Ti / omega_kz_min > 0.1:
         warnings.warn(
             f"This calculation produced one or more invalid w/kz value(s) "
             f"which violates the regime in which the dispersion relation "
@@ -182,7 +195,7 @@ def alfven(
             )
         
     # dispersion relation is only valid in the regime w << w_ci
-    if w_max / omega_ci > 0.01:
+    if w_max / omega_ci > 0.1:
         warnings.warn(
             f"The calculation produced a high-frequency wave, "
             f"which violates the low frequency assumption (w << w_ci)",
