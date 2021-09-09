@@ -22,9 +22,6 @@ from plasmapy.utils.exceptions import PhysicsWarning
     n_i={"can_be_negative": False},
     T_e={"can_be_negative": False, "equivalencies": u.temperature_energy()},
 )
-
-
-
 def hirose(
     *,
     B: u.T,
@@ -37,20 +34,20 @@ def hirose(
     gamma_i: Union[float, int] = 3,
     z_mean: Union[float, int] = None,
     **kwargs,
- ):
+):
     r"""
     Notes
     -----
-    
+
     Solves equation 7 in Bellan2012JGR (originally from Hirose2004)
-    
+
     ..math::
         \left(\omega^2 - k_{\rm z}^2 v_{\rm A}^2 \right) &
         \left(\omega^4 - \omega^2 k^2 \left(c_{\rm s}^2 + v_{\rm A}^2 \right) &
-        + k^2 v_{\rm A}^2 k_{\rm z}^2 c_{\rm s}^2 \right) & 
+        + k^2 v_{\rm A}^2 k_{\rm z}^2 c_{\rm s}^2 \right) &
         \frac{k^2 c^2}{\omega_{\rm pi}^2} \omega^2 v_{\rm A}^2 k_{\rm z}^2 &
         \left(\omega^2 - k^2 c_{\rm s}^2 \right)
-    
+
     Examples
     --------
     >>> from astropy import units as u
@@ -69,7 +66,7 @@ def hirose(
      'alfven_mode': <Quantity [7.96179537e-01, 1.14921892e+03] rad / s>,
      'acoustic_mode': <Quantity [0.00995224, 0.68834011] rad / s>}
     '''
-    
+
     # validate argument ion
     if not isinstance(ion, Particle):
         try:
@@ -135,73 +132,72 @@ def hirose(
         raise ValueError(
             f"Argument 'theta' needs to be a single valued or 1D array astropy "
             f"Quantity, got array of shape {k.shape}."
-        ) 
-"""    
+        )"""    
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,
-        T_i = 0 * u.K,
+        T_i =0 * u.K,
         ion=ion,
         n_e=n_e,
         gamma_e=gamma_e,
         gamma_i=gamma_i,
         z_mean=z_mean,
-        )   
+    )   
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_pi = pfp.plasma_frequency(n=n_i, particle=ion)
-    
-    
+
+
     #Parameters kz
-    
+
     kz = np.cos(theta.value) * k
-    
-    
-    #Parameters sigma, D, and F to simplify equation 3
+
+
+    # Parameters sigma, D, and F to simplify equation 3
     A = (kz * v_A) ** 2
     B = (k * c_s) ** 2
     C = (k * v_A) ** 2
-    D = ((k * c) / omega_pi ) ** 2
-    
-    #Polynomial coefficients where x in 'cx' represents the order of the term
-    
-    #c3 must be an astropy.units.quantiy.Quantity type.
-    #Typing "1" doesn't work since it's an int, "A ** 0" gives astropy units.
-    #May be simpler way to change to proper type.
-    
+    D = ((k * c) / omega_pi) ** 2
+
+    # Polynomial coefficients where x in 'cx' represents the order of the term
+
+    # c3 must be an astropy.units.quantiy.Quantity type.
+    # Typing "1" doesn't work since it's an int, "A ** 0" gives astropy units.
+    # May be simpler way to change to proper type.
+
     c3 = A ** 0
-    c2 = -A * (1 + D) + B  + C
+    c2 = -A * (1 + D) + B + C
     c1 = A * (2 * B + C + B * D)
     c0 = -B * A ** 2
-    
+
     omega = {}
     fast_mode = []
     alfven_mode = []
     acoustic_mode = []
-    
+
     # If a single k value is given
     if np.isscalar(k.value) == True:
-        
+
         w = np.emath.sqrt(np.roots([c3.value, c2.value, c1.value, c0.value]))
         fast_mode = np.max(w)
         alfven_mode = np.median(w)
         acoustic_mode = np.min(w)
-        
+
     # If mutliple k values are given
     else:
         # a0*x^3 + a1*x^2 + a2*x^3 + a3 = 0
-        for (a0,a1,a2,a3) in zip(c3, c2, c1, c0):
-    
+        for (a0, a1, a2, a3) in zip(c3, c2, c1, c0):
+
             w = np.emath.sqrt(np.roots([a0.value, a1.value, a2.value, a3.value]))
             fast_mode.append(np.max(w))
             alfven_mode.append(np.median(w))
-            acoustic_mode.append(np.min(w)) 
+            acoustic_mode.append(np.min(w))
 
-    omega['fast_mode'] = fast_mode * u.rad / u.s
-    omega['alfven_mode'] = alfven_mode * u.rad / u.s
-    omega['acoustic_mode'] = acoustic_mode * u.rad / u.s
-    
+    omega["fast_mode"] = fast_mode * u.rad / u.s
+    omega["alfven_mode"] = alfven_mode * u.rad / u.s
+    omega["acoustic_mode"] = acoustic_mode * u.rad / u.s
+
     # Ti is assumed to be 0 for this eqn
-    
+
     return omega
 
 inputs = {
