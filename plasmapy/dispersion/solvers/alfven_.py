@@ -220,7 +220,6 @@ def alfven(
     omega = np.sqrt(A * (1 + F))
     # print(omega_ci)
 
-
     # check for dispersion relation assumptions and valid regimes
 
     # thermal speeds for electrons and ions in plasma
@@ -247,7 +246,7 @@ def alfven(
             PhysicsWarning,
         )
 
-    # minimum value for w/kz test  
+    # minimum value for w/kz test
     elif omega_kz_min / v_Te > 0.1 or v_Ti / omega_kz_min > 0.1:
         warnings.warn(
             f"This calculation produced one or more invalid w/kz value(s) "
@@ -255,7 +254,7 @@ def alfven(
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
         )
-    
+
     # dispersion relation is only valid in the regime w << w_ci
     if w_max / omega_ci > 0.1:
         warnings.warn(
