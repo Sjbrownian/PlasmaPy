@@ -23,8 +23,6 @@ from plasmapy.utils.exceptions import PhysicsWarning
     T_e={"can_be_negative": False, "equivalencies": u.temperature_energy()},
     T_i={"can_be_negative": False, "equivalencies": u.temperature_energy()},
 )
-
-
 def alfven(
     *,
     B: u.T,
@@ -37,22 +35,89 @@ def alfven(
     gamma_e: Union[float, int] = 1,
     gamma_i: Union[float, int] = 3,
     z_mean: Union[float, int] = None,
- ):
-    r'''
+):
+    r"""
+    Using the equation provided in Bellan 201, this function
+    calculates the numerical solution to the two fluid dispersion relation
+    presented by Hirose 2004.
+    Parameters
+    ----------
+    B : `~astropy.units.Quantity`
+        The magnetic field magnitude in units convertible to :math:`T`.
+    ion : `str` or `~plasmapy.particles.particle_class.Particle`
+        Representation of the ion species (e.g., ``'p'`` for protons, ``'D+'``
+        for deuterium, ``'He-4 +1'`` for singly ionized helium-4, etc.). If no
+        charge state information is provided, then the ions are assumed to be
+        singly ionized.
+    k : `~astropy.units.Quantity`, single valued or 1-D array
+        Wavenumber in units convertible to :math:`rad / m`.  Either single
+        valued or 1-D array of length :math:`N`.
+    n_i : `~astropy.units.Quantity`
+        Ion number density in units convertible to :math:`m^{-3}`.
+    T_e : `~astropy.units.Quantity`
+        The electron temperature in units of :math:`K` or :math:`eV`.
+    T_i : `~astropy.units.Quantity`
+        The ion temperature in units of :math:`K` or :math:`eV`.
+    theta : `~astropy.units.Quantity`, single valued or 1-D array
+        The angle of propagation of the wave with respect to the magnetic field,
+        :math:`\cos^{-1}(k_z / k)`, in units must be convertible to :math:`deg`.
+        Either single valued or 1-D array of size :math:`M`.
+    gamma_e : `float` or `int`, optional
+        The adiabatic index for electrons, which defaults to 1.  This
+        value assumes that the electrons are able to equalize their
+        temperature rapidly enough that the electrons are effectively
+        isothermal.
+    gamma_i : `float` or `int`, optional
+        The adiabatic index for ions, which defaults to 3. This value
+        assumes that ion motion has only one degree of freedom, namely
+        along magnetic field lines.
+    z_mean : `float` or int, optional
+        The average ionization state (arithmetic mean) of the ``ion`` composing
+        the plasma.  Will override any charge state defined by argument ``ion``.
+    Returns
+    -------
+    omega : Dict[str, `~astropy.units.Quantity`]
+        A dictionary of computed wave frequencies in units :math:`rad/s`.  The
+        dictionary contains three keys: ``'fast_mode'`` for the fast mode,
+        ``'alfven_mode'`` for the Alfvén mode, and ``'acoustic_mode'`` for the
+        ion-acoustic mode.  The value for each key will be a :math:`N x M` array.
+    Raises
+    ------
+    TypeError
+        If applicable arguments are not instances of `~astropy.units.Quantity` or
+        cannot be converted into one.
+    TypeError
+        If ``ion`` is not of type or convertible to `~plasmapy.particles.Particle`.
+    TypeError
+        If ``gamma_e``, ``gamma_i``, or``z_mean`` are not of type `int` or `float`.
+    ~astropy.units.UnitTypeError
+        If applicable arguments do not have units convertible to the expected
+        units.
+    ValueError
+        If any of ``B``, ``k``, ``n_i``, ``T_e``, or ``T_i`` is negative.
+    ValueError
+        If ``k`` is negative or zero.
+    ValueError
+        If ``ion`` is not of category ion or element.
+    ValueError
+        If ``B``, ``n_i``, ``T_e``, or ``T_I`` are not single valued
+        `astropy.units.Quantity` (i.e. an array).
+    ValueError
+        If ``k`` or ``theta`` are not single valued or a 1-D array.
     Notes
     -----
-    
+
     Solves equation 5 in Bellan2012JGR (2x2 matrix method
     argued in Hasegawa and Uberoi 1982, Morales and Maggs 1997,
     and Lysak and Lotko 1996)
-    
+
     ..math::
         \omega^2 = k_{\rm z}^2 v_{\rm A}^2 \left(1 + \frac{k_{\rm x}^2 &
         c_{\rm s}^2}{\omega_{\rm ci}^2} \right)
-    
+
     Examples
     --------
-    
+
     >>> from astropy import units as u
     >>> from plasmapy.dispersion.numerical import alfven_
     >>> inputs = {
@@ -67,9 +132,8 @@ def alfven(
     >>> omegas = alfven(**inputs)
     >>> omegas
     [7.01005647e+00 6.70197761e+08] rad / s
-    
-    '''
-    
+    """
+
     # validate argument ion
     if not isinstance(ion, Particle):
         try:
@@ -129,8 +193,8 @@ def alfven(
         raise ValueError(
             f"Argument 'theta' needs to be a single valued or 1D array astropy "
             f"Quantity, got array of shape {k.shape}."
-        ) 
-        
+        )
+
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,
@@ -140,42 +204,40 @@ def alfven(
         gamma_e=gamma_e,
         gamma_i=gamma_i,
         z_mean=z_mean,
-        )   
+    ) 
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_ci = pfp.gyrofrequency(B=B, particle=ion, signed=False, Z=z_mean)
-    
-    
+
     # parameters kz
-    
+
     kz = np.cos(theta.value) * k
     kx = np.sqrt(k ** 2 - kz ** 2)
-    
-    
+
     # parameters sigma, D, and F to simplify equation 3
     A = (kz * v_A) ** 2
     F = ((kx * c_s) / omega_ci ) ** 2
-    
+
     omega = np.sqrt(A * (1 + F))
     #print(omega_ci)
 
 
     # check for dispersion relation assumptions and valid regimes
-    
+
     # thermal speeds for electrons and ions in plasma
     v_Te = pfp.thermal_speed(T=T_e, particle='e-')
     v_Ti = pfp.thermal_speed(T=T_i, particle=ion)
-    
+
     # maximum value of omega
     w_max = np.max(omega)
-    
+
     # maximum and minimum values for w/kz
     omega_kz = omega / kz
-    
+
     omega_kz_max = np.max(omega_kz)
     omega_kz_min = np.min(omega_kz)
-    
+
     # dispersion relation is only valid in v_Te >> w/kz >> v_Ti
-    
+
     # maximum value for w/kz test
     if omega_kz_max / v_Te > 0.1 or v_Ti / omega_kz_max > 0.1:
         warnings.warn(
@@ -184,7 +246,7 @@ def alfven(
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
             )
-    
+
     # minimum value for w/kz test    
     elif omega_kz_min / v_Te > 0.1 or v_Ti / omega_kz_min > 0.1:
         warnings.warn(
@@ -193,7 +255,7 @@ def alfven(
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
             )
-        
+    
     # dispersion relation is only valid in the regime w << w_ci
     if w_max / omega_ci > 0.1:
         warnings.warn(
@@ -201,8 +263,7 @@ def alfven(
             f"which violates the low frequency assumption (w << w_ci)",
             PhysicsWarning,
             )
-    
-    
+
     return omega
 
 inputs = {
