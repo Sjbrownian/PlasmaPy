@@ -35,7 +35,7 @@ def hirose(
     z_mean: Union[float, int] = None,
     **kwargs,
 ):
-    
+
     r"""
     Using the equation provided in Bellan 201, this function
     calculates the numerical solution to the two fluid dispersion relation
