@@ -43,7 +43,6 @@ def hollweg(
     presented by Hollweg 1999. This dispersion relation assumes
     :math:`\omega/\omega_{\rm ci} \ll 1`, a uniform magnetic field
     :math: `\mathbf{B_0}`, and quasi-neutrality.
-
     Parameters
     ----------
     B : `~astropy.units.Quantity`
@@ -78,7 +77,6 @@ def hollweg(
     z_mean : `float` or int, optional
         The average ionization state (arithmetic mean) of the ``ion`` composing
         the plasma.  Will override any charge state defined by argument ``ion``.
-
     Returns
     -------
     omega : Dict[str, `~astropy.units.Quantity`]
@@ -86,50 +84,38 @@ def hollweg(
         dictionary contains three keys: ``'fast_mode'`` for the fast mode,
         ``'alfven_mode'`` for the Alfvén mode, and ``'acoustic_mode'`` for the
         ion-acoustic mode.  The value for each key will be a :math:`N x M` array.
-
     Raises
     ------
     TypeError
         If applicable arguments are not instances of `~astropy.units.Quantity` or
         cannot be converted into one.
-
     TypeError
         If ``ion`` is not of type or convertible to `~plasmapy.particles.Particle`.
-
     TypeError
         If ``gamma_e``, ``gamma_i``, or``z_mean`` are not of type `int` or `float`.
     ~astropy.units.UnitTypeError
         If applicable arguments do not have units convertible to the expected
         units.
-
     ValueError
         If any of ``B``, ``k``, ``n_i``, ``T_e``, or ``T_i`` is negative.
-
     ValueError
         If ``k`` is negative or zero.
-
     ValueError
         If ``ion`` is not of category ion or element.
-
     ValueError
         If ``B``, ``n_i``, ``T_e``, or ``T_I`` are not single valued
         `astropy.units.Quantity` (i.e. an array).
-
     ValueError
         If ``k`` or ``theta`` are not single valued or a 1-D array.
-
     Warns
     -----
     : `~plasmapy.utils.exceptions.PhysicsWarning`
         When the computed wave frequencies violate the
         :math:`\omega/\omega_{\rm ci} \ll 1` assumption of the dispersion relation.
-
     Notes
     -----
-
     The equation presented in Hollweg 1999 [2]_ (equation 3 in Bellan 2012
     [1]_) is:
-
     .. math::
         \left( \frac{\omega^2}{k_{\rm z}^2 v_{\rm A}^2} - 1 \right) &
         \left[
@@ -143,22 +129,17 @@ def hollweg(
             \frac{c_{\rm s}^2}{\omega_{\rm ci}^2}
             - \frac{c^2}{\omega_{\rm pe}^2} \frac{\omega^2}{k_{\rm z}^2v_{\rm A}^2}
         \right)
-
     where
-
     .. math::
         k_{\rm x} = \mathbf{k} \cdot \hat{x}
-
     References
     ----------
     .. [1] PM Bellan, Improved basis set for low frequency plasma waves, 2012,
        JGR, 117, A12219, doi: `10.1029/2012JA017856
        <https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2012JA017856>`_.
-
     .. [2] JV Hollweg, Kinetic Alfven wave revisited, 1999, JGR, 104(A7),
        14811–14819, doi: `10.1029/1998JA900132
        <https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/1998JA900132>`_
-
     Examples
     --------
     >>> from astropy import units as u
