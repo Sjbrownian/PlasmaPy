@@ -204,7 +204,7 @@ def alfven(
         gamma_e=gamma_e,
         gamma_i=gamma_i,
         z_mean=z_mean,
-    ) 
+    )
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_ci = pfp.gyrofrequency(B=B, particle=ion, signed=False, Z=z_mean)
 
@@ -215,16 +215,16 @@ def alfven(
 
     # parameters sigma, D, and F to simplify equation 3
     A = (kz * v_A) ** 2
-    F = ((kx * c_s) / omega_ci ) ** 2
+    F = ((kx * c_s) / omega_ci) ** 2
 
     omega = np.sqrt(A * (1 + F))
-    #print(omega_ci)
+    # print(omega_ci)
 
 
     # check for dispersion relation assumptions and valid regimes
 
     # thermal speeds for electrons and ions in plasma
-    v_Te = pfp.thermal_speed(T=T_e, particle='e-')
+    v_Te = pfp.thermal_speed(T=T_e, particle="e-")
     v_Ti = pfp.thermal_speed(T=T_i, particle=ion)
 
     # maximum value of omega
@@ -245,16 +245,16 @@ def alfven(
             f"which violates the regime in which the dispersion relation "
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
-            )
+        )
 
-    # minimum value for w/kz test    
+    # minimum value for w/kz test  
     elif omega_kz_min / v_Te > 0.1 or v_Ti / omega_kz_min > 0.1:
         warnings.warn(
             f"This calculation produced one or more invalid w/kz value(s) "
             f"which violates the regime in which the dispersion relation "
             f"is valid (v_Te >> w/kz >> v_Ti)",
             PhysicsWarning,
-            )
+        )
     
     # dispersion relation is only valid in the regime w << w_ci
     if w_max / omega_ci > 0.1:
@@ -262,9 +262,10 @@ def alfven(
             f"The calculation produced a high-frequency wave, "
             f"which violates the low frequency assumption (w << w_ci)",
             PhysicsWarning,
-            )
+        )
 
     return omega
+
 
 inputs = {
 "k": np.logspace(-2, -7, 3) * u.rad / u.m,
