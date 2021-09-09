@@ -136,18 +136,18 @@ def hirose(
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,
-        T_i =0 * u.K,
+        T_i=0 * u.K,
         ion=ion,
         n_e=n_e,
         gamma_e=gamma_e,
         gamma_i=gamma_i,
         z_mean=z_mean,
-    )   
+    )
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_pi = pfp.plasma_frequency(n=n_i, particle=ion)
 
 
-    #Parameters kz
+    # Parameters kz
 
     kz = np.cos(theta.value) * k
 
