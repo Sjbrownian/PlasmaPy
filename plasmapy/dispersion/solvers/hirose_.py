@@ -47,11 +47,13 @@ def hirose(
         + k^2 v_{\rm A}^2 k_{\rm z}^2 c_{\rm s}^2 \right) &
         \frac{k^2 c^2}{\omega_{\rm pi}^2} \omega^2 v_{\rm A}^2 k_{\rm z}^2 &
         \left(\omega^2 - k^2 c_{\rm s}^2 \right)
+    
+    #This Example needs to be udpdate with hirose eqn numbers!!!
 
     Examples
     --------
     >>> from astropy import units as u
-    >>> from plasmapy.dispersion import two_fluid_dispersion
+    >>> from plasmapy.dispersion.numerical import hollweg_
     >>> inputs = {
     ...    "k": np.logspace(-7,-2,2) * u.rad / u.m,
     ...    "theta": 30 * u.deg,
@@ -132,7 +134,7 @@ def hirose(
         raise ValueError(
             f"Argument 'theta' needs to be a single valued or 1D array astropy "
             f"Quantity, got array of shape {k.shape}."
-        )"""    
+        )"""
     n_e = z_mean * n_i
     c_s = pfp.ion_sound_speed(
         T_e=T_e,
@@ -146,11 +148,9 @@ def hirose(
     v_A = pfp.Alfven_speed(B, n_i, ion=ion, z_mean=z_mean)
     omega_pi = pfp.plasma_frequency(n=n_i, particle=ion)
 
-
     # Parameters kz
 
     kz = np.cos(theta.value) * k
-
 
     # Parameters sigma, D, and F to simplify equation 3
     A = (kz * v_A) ** 2
@@ -199,6 +199,7 @@ def hirose(
     # Ti is assumed to be 0 for this eqn
 
     return omega
+
 
 inputs = {
 "k": 0.01 * u.rad / u.m,
