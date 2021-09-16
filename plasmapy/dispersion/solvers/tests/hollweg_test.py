@@ -1,11 +1,11 @@
-"""Tests for the two fluid dispersion solution."""
+"""Tests for the hollweg dispersion solution."""
 
 import numpy as np
 import pytest
 
 from astropy import units as u
 
-from plasmapy.dispersion.analytical.two_fluid_ import two_fluid
+from plasmapy.dispersion.analytical.hollweg_ import hollweg
 from plasmapy.formulary import parameters as pfp
 from plasmapy.particles import Particle
 from plasmapy.utils.exceptions import PhysicsWarning
