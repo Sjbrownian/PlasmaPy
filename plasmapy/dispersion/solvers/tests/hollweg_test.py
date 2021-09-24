@@ -11,8 +11,9 @@ from plasmapy.particles import Particle
 from plasmapy.utils.exceptions import PhysicsWarning
 
 
-class TestTwoFluid:
+class TestHollweg:
     _kwargs_single_valued = {
+        # Values may need to be changed
         "B": 8.3e-9 * u.T,
         "ion": "p+",
         "k": 0.0001 * u.rad / u.m,
