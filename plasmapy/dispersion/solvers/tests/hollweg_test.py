@@ -5,7 +5,7 @@ import pytest
 
 from astropy import units as u
 
-from plasmapy.dispersion.analytical.hollweg_ import hollweg
+from plasmapy.dispersion.numerical.hollweg_ import hollweg
 from plasmapy.formulary import parameters as pfp
 from plasmapy.particles import Particle
 from plasmapy.utils.exceptions import PhysicsWarning
