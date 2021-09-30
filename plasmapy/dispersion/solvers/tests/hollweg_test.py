@@ -12,6 +12,7 @@ from plasmapy.utils.exceptions import PhysicsWarning
 
 
 class TestHollweg:
+    """
     _kwargs_single_valued = {
         # Values may need to be changed
         "B": 8.3e-9 * u.T,
@@ -63,3 +64,5 @@ class TestHollweg:
             ({**_kwargs_single_valued, "gamma_i": "wrong type"}, TypeError),
         ],
     )
+    """
+    # *********Look up pytest to understand*********
