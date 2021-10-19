@@ -314,5 +314,5 @@ inputs = {
 
 
 
-print(hollweg(**inputs))
-
+#print(hollweg(**inputs))
+print(**inputs["theta"])
