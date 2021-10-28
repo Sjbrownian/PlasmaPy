@@ -12,24 +12,15 @@ from plasmapy.utils.exceptions import PhysicsWarning
 
 
 class TestHollweg:
-    """
     _kwargs_single_valued = {
         # Values may need to be changed
-        "B": 8.3e-9 * u.T,
-        "ion": "p+",
-        "k": 0.0001 * u.rad / u.m,
-        "n_i": 5.0e6 * u.m ** -3,
-        "T_e": 1.6e6 * u.K,
-        "T_i": 4.0e5 * u.K,
-        "theta": 45 * u.deg,
-    }
-    _kwargs_bellan2012 = {
-        "B": 400e-4 * u.T,
-        "ion": Particle("He+"),
-        "n_i": 6.358e19 * u.m ** -3,
-        "T_e": 20 * u.eV,
-        "T_i": 10 * u.eV,
-        "k": (2 * np.pi * u.rad) / (0.56547 * u.m),
+    "k": .01 * u.rad / u.m,
+    "theta": 88 * u.deg,
+    "n_i": 5 * u.cm ** -3,
+    "B": 2.2e-8 * u.T,
+    "T_e": 1.6e6 * u.K,
+    "T_i": 4.0e5 * u.K,
+    "ion": Particle("p+")
     }
 
     @pytest.mark.parametrize(
@@ -64,5 +55,32 @@ class TestHollweg:
             ({**_kwargs_single_valued, "gamma_i": "wrong type"}, TypeError),
         ],
     )
-    """
-    # *********Look up pytest to understand*********
+    def test_raises(self, kwargs, _error):
+        """Test scenarios that raise an `Exception`."""
+        with pytest.raises(error_):
+            hollweg(**kwargs)
+    
+    @pytest.mark.parametrize(
+        "kwargs, _warning",
+        [
+            # check the low-frequency limit (w<<w_ci)
+            (
+                {
+                    "k": .01 * u.rad / u.m,
+                    "theta": 88 * u.deg,
+                    "n_i": 5 * u.cm ** -3,
+                    "B": 2.2e-8 * u.T,
+                    "T_e": 1.6e6 * u.K,
+                    "T_i": 4.0e5 * u.K,
+                    "ion": Particle("p+")
+                },
+                PhysicsWarning,
+            ),
+        ],
+    )
+    def test_warning(self, kawrgs, _warning):
+        """Test scenarios that raise a `Warning`."""
+        with pytest.warns(_warning):
+            hollweg(**kwargs)
+    
+    

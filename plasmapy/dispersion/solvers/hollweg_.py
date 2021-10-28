@@ -303,7 +303,7 @@ def hollweg(
 
 
 inputs = {
-    "k": np.logspace(-7,-2,2) * u.rad / u.m,
+    "k": .01 * u.rad / u.m,
     "theta": 88 * u.deg,
     "n_i": 5 * u.cm ** -3,
     "B": 2.2e-8 * u.T,
@@ -314,5 +314,4 @@ inputs = {
 
 
 
-#print(hollweg(**inputs))
-print(**inputs["theta"])
+print(hollweg(**inputs))
