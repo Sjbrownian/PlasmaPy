@@ -62,7 +62,7 @@ def modify_docstring(func=None, prepend: str = None, append: str = None):
             )
 
         # save the original docstring
-        setattr(wrapper, "__original_doc__", wrapper.__doc__)
+        wrapper.__original_doc__ = wrapper.__doc__
         doclines = inspect.cleandoc(wrapper.__doc__).splitlines()
 
         # prepend docstring lines
@@ -104,7 +104,7 @@ def preserve_signature(f):
     """
     A decorator for decorators, which preserves the signature of the function
     being wrapped. This preservation allows IDE function parameter hints to work
-    on the wrapped function. To do this, the `__signature__` dunder is defined, or
+    on the wrapped function. To do this, the ``__signature__`` dunder is defined, or
     inherited, from the function being wrapped to the resulting wrapped function.
 
     Parameters

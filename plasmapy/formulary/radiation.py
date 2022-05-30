@@ -13,7 +13,7 @@ import numpy as np
 
 from scipy.special import exp1
 
-from plasmapy.formulary.parameters import plasma_frequency
+from plasmapy.formulary.frequencies import plasma_frequency
 from plasmapy.particles import Particle, particle_input
 from plasmapy.utils.decorators import validate_quantities
 from plasmapy.utils.exceptions import PhysicsError
@@ -76,7 +76,7 @@ def thermal_bremsstrahlung(
         Ion number density in the plasma (convertible to m\ :sup:`-3`\ ). Defaults
         to the quasi-neutral condition :math:`n_i = n_e / Z`\ .
 
-    ion : `str` or `~plasmapy.particles.particle_class.Particle`, optional
+    ion_species : `str` or `~plasmapy.particles.particle_class.Particle`, optional
         An instance of `~plasmapy.particles.particle_class.Particle`, or a string
         convertible to `~plasmapy.particles.particle_class.Particle`.
 
